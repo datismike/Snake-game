@@ -3,11 +3,15 @@
 #include "field.h"
 
 Stack *snake;
+Data food;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+Data GetRandomFood(HWND hWnd);
+void NewGame(HWND hWnd);
+void GameOver(HWND hWnd);
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR szCmdLine, int nCmdShow)
 {
-	snake = newStack();
+	srand(time(NULL));
 
 	WNDCLASSEX wcex;
 	wcex.cbSize = sizeof(WNDCLASSEX);
@@ -33,6 +37,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR szCmdLi
 		FIELD_HEIGHT * CELL_HEIGHT,
 		NULL, NULL, hInstance, NULL
 	);
+
+	NewGame(hWnd);
+
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
@@ -43,6 +50,45 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR szCmdLi
 		DispatchMessage(&msg);
 	}
 	return (int)msg.wParam;
+}
+
+Data GetRandomFood(HWND hWnd)
+{
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	Data result;
+	BOOL condition = TRUE;
+	do
+	{
+		result.x = CELL_WIDTH * (rand() % FIELD_WIDTH);
+		result.y = CELL_WIDTH * (rand() % FIELD_HEIGHT);
+		if ((result.x + CELL_WIDTH <= width) && (result.y + CELL_HEIGHT <= height))
+		{
+			for (PNode node = snake->getBottomNode(snake); node != NULL; node = node->next)
+			{
+				if ((node->data.x == result.x) && (node->data.y == result.y))
+					break;
+				else if (node->next == NULL)
+					condition = FALSE;
+			}
+		}
+	}
+	while (condition);
+	return result;
+}
+
+void NewGame(HWND hWnd)
+{
+	snake = newStack();
+	food = GetRandomFood(hWnd);
+}
+
+void GameOver(HWND hWnd)
+{
+	freeStack(snake);
+	MessageBox(hWnd, "Game over", WINDOW_NAME, MB_OK);
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -72,13 +118,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			FillRect(hCmpDC, &rect, hBrush);
 
 			// Draw snake
-			lBrush.lbColor = CELL_COLOR;
+			lBrush.lbColor = SNAKE_COLOR;
 			hBrush = CreateBrushIndirect(&lBrush);
 			SelectObject(hCmpDC, hBrush);
 			for (PNode node = snake->getBottomNode(snake); node != NULL; node = node->next)
 			{
 				Rectangle(hCmpDC, node->data.x + CELL_MARGIN, node->data.y + CELL_MARGIN, node->data.x + CELL_WIDTH - CELL_MARGIN, node->data.y + CELL_HEIGHT - CELL_MARGIN);
 			}
+
+			// Draw food
+			lBrush.lbColor = FOOD_COLOR;
+			hBrush = CreateBrushIndirect(&lBrush);
+			SelectObject(hCmpDC, hBrush);
+			Rectangle(hCmpDC, food.x + CELL_MARGIN, food.y + CELL_MARGIN, food.x + CELL_WIDTH - CELL_MARGIN, food.y + CELL_HEIGHT - CELL_MARGIN);
 
 			SetStretchBltMode(hDC, COLORONCOLOR);
 			BitBlt(hDC, 0, 0, fWidth, fHeight, hCmpDC, 0, 0, SRCCOPY);
@@ -110,9 +162,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					if (condition1 || condition2)
 					{
 						KillTimer(hWnd, wParam);
-						freeStack(snake);
-						MessageBox(hWnd, "Game over", WINDOW_NAME, MB_OK);
-						snake = newStack();
+						GameOver(hWnd);
+						NewGame(hWnd);
 					}
 					InvalidateRect(hWnd, NULL, FALSE);
 					break;
@@ -126,9 +177,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				case VK_RETURN:
 				{
+					NewGame(hWnd);
 					SetTimer(hWnd, TIMER_TICK_ID, TIMER_TICK_ELAPSE, NULL);
 					break;
 				}
+				case VK_SPACE:
+					food = GetRandomFood(fWidth, fHeight);
+					InvalidateRect(hWnd, NULL, FALSE);
+					break;
 			}
 			break;
 		}
