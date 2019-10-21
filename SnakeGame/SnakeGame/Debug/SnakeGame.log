@@ -1,0 +1,4 @@
+﻿  main.c
+C:\Users\micha\Desktop\Проекты\C\Snake-game\SnakeGame\SnakeGame\main.c(8,1): warning C4028: формальный параметр 3 отличается от объявления
+C:\Users\micha\Desktop\Проекты\C\Snake-game\SnakeGame\SnakeGame\main.c(59): warning C4715: WndProc: значение возвращается не при всех путях выполнения
+  SnakeGame.vcxproj -> C:\Users\micha\Desktop\Проекты\C\Snake-game\SnakeGame\Debug\SnakeGame.exe

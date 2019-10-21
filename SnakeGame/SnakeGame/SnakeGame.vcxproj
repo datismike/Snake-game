@@ -18,6 +18,14 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c" />
+    <ClCompile Include="stack.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="field.h" />
+    <ClInclude Include="stack.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{9beb8a43-175a-4287-aa1d-f7be2dccc705}</ProjectGuid>
