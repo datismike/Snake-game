@@ -41,6 +41,7 @@ typedef struct Stack
 	Bool (*isEmpty)(struct Stack *);
 	void (*move)(struct Stack *);
 	void (*setDirection)(struct Stack *, Direction);
+	Direction (*getDirection)(struct Stack *);
 
 	// Private
 	void *privateData;

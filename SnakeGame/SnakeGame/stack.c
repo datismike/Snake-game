@@ -63,15 +63,6 @@ static void move(Stack *pstack)
 		node->data.x = node->next->data.x;
 		node->data.y = node->next->data.y;
 	}
-	//((PrivateData *)pstack->privateData)->bottomNode = ((PrivateData *)pstack->privateData)->bottomNode->next;
-	//free(((PrivateData *)pstack->privateData)->bottomNode->prev);
-	//((PrivateData *)pstack->privateData)->bottomNode->prev = NULL;
-
-	//((PrivateData *)pstack->privateData)->topNode->next = (PNode)malloc(sizeof(Node));
-	//((PrivateData *)pstack->privateData)->topNode->next->next = NULL;
-	//((PrivateData *)pstack->privateData)->topNode->next->prev = ((PrivateData *)pstack->privateData)->topNode;
-	//((PrivateData *)pstack->privateData)->topNode->next->data = ((PrivateData *)pstack->privateData)->topNode->data;
-	//((PrivateData *)pstack->privateData)->topNode = ((PrivateData *)pstack->privateData)->topNode->next;
 	switch (((PrivateData *)pstack->privateData)->direction)
 	{
 		case Up:
@@ -102,6 +93,11 @@ static void setDirection(Stack *pstack, Direction direction)
 	((PrivateData *)pstack->privateData)->direction = direction;
 }
 
+static Direction getDirection(Stack *pstack)
+{
+	return ((PrivateData *)pstack->privateData)->direction;
+}
+
 Stack *newStack()
 {
 	Stack *stack = (Stack *)malloc(sizeof(Stack));
@@ -112,6 +108,7 @@ Stack *newStack()
 	stack->isEmpty = &isEmpty;
 	stack->move = &move;
 	stack->setDirection = &setDirection;
+	stack->getDirection = &getDirection;
 	((PrivateData *)stack->privateData)->topNode = NULL;
 	((PrivateData *)stack->privateData)->bottomNode = NULL;
 	stack->setDirection(stack, Right);
@@ -126,6 +123,14 @@ Stack *newStack()
 	stack->push(stack, cell);
 
 	cell.x = 2 * CELL_WIDTH;
+	cell.y = 0;
+	stack->push(stack, cell);
+
+	cell.x = 3 * CELL_WIDTH;
+	cell.y = 0;
+	stack->push(stack, cell);
+
+	cell.x = 4 * CELL_WIDTH;
 	cell.y = 0;
 	stack->push(stack, cell);
 

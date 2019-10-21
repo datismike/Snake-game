@@ -29,8 +29,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR szCmdLi
 		WINDOW_NAME,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		FIELD_WIDTH * CELL_WIDTH + CELL_MARGIN,
-		FIELD_HEIGHT * CELL_HEIGHT + 9,
+		FIELD_WIDTH * CELL_WIDTH,
+		FIELD_HEIGHT * CELL_HEIGHT,
 		NULL, NULL, hInstance, NULL
 	);
 	ShowWindow(hWnd, nCmdShow);
@@ -97,7 +97,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				case TIMER_TICK_ID:
 				{
 					snake->move(snake);
-					if ((snake->getTopNode(snake)->data.x >= fWidth) || (snake->getTopNode(snake)->data.x < 0) || (snake->getTopNode(snake)->data.y >= fHeight) || snake->getTopNode(snake)->data.y < 0)
+					BOOL condition1 = (snake->getTopNode(snake)->data.x + CELL_WIDTH >= fWidth) || (snake->getTopNode(snake)->data.x < 0) || (snake->getTopNode(snake)->data.y + CELL_HEIGHT>= fHeight) || (snake->getTopNode(snake)->data.y < 0);
+					BOOL condition2 = FALSE;
+					for (PNode node = snake->getBottomNode(snake); node->next != NULL; node = node->next)
+					{
+						if ((snake->getTopNode(snake)->data.x == node->data.x) && (snake->getTopNode(snake)->data.y == node->data.y))
+						{
+							condition2 = TRUE;
+							break;
+						}
+					}
+					if (condition1 || condition2)
 					{
 						KillTimer(hWnd, wParam);
 						freeStack(snake);
@@ -128,22 +138,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				case VK_UP:
 				{
-					snake->setDirection(snake, Up);
+					if (snake->getDirection(snake) != Down)
+						snake->setDirection(snake, Up);
 					break;
 				}
 				case VK_RIGHT:
 				{
-					snake->setDirection(snake, Right);
+					if (snake->getDirection(snake) != Left)
+						snake->setDirection(snake, Right);
 					break;
 				}
 				case VK_DOWN:
 				{
-					snake->setDirection(snake, Down);
+					if (snake->getDirection(snake) != Up)
+						snake->setDirection(snake, Down);
 					break;
 				}
 				case VK_LEFT:
 				{
-					snake->setDirection(snake, Left);
+					if (snake->getDirection(snake) != Right)
+						snake->setDirection(snake, Left);
 					break;
 				}
 			}
