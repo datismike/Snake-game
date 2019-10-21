@@ -40,10 +40,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR szCmdLi
 	);
 
 	NewGame(hWnd);
-
+	
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
-
+	MessageBox(hWnd, "Press ENTER to start", WINDOW_NAME, MB_OK);
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
@@ -94,7 +94,7 @@ void GameOver(HWND hWnd)
 	_itoa(foodCount, str1, 10);
 	char str2[100] = "Game over. Food count: ";
 	strcat(str2, str1);
-	MessageBox(hWnd, str2, WINDOW_NAME, MB_YESNO);
+	MessageBox(hWnd, str2, WINDOW_NAME, MB_OK);
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -194,10 +194,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					SetTimer(hWnd, TIMER_TICK_ID, TIMER_TICK_ELAPSE, NULL);
 					break;
 				}
-				case VK_SPACE:
-					food = GetRandomFood(fWidth, fHeight);
-					InvalidateRect(hWnd, NULL, FALSE);
-					break;
 			}
 			break;
 		}
