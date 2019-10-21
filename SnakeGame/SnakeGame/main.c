@@ -29,8 +29,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR szCmdLi
 		WINDOW_NAME,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		FIELD_WIDTH * CELL_WIDTH,
-		FIELD_HEIGHT * CELL_HEIGHT,
+		FIELD_WIDTH * CELL_WIDTH + CELL_MARGIN,
+		FIELD_HEIGHT * CELL_HEIGHT + 9,
 		NULL, NULL, hInstance, NULL
 	);
 	ShowWindow(hWnd, nCmdShow);
@@ -47,17 +47,18 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR szCmdLi
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+	int fWidth = rect.right - rect.left;
+	int fHeight = rect.bottom - rect.top;
 	switch (message)
+
 	{
 		case WM_PAINT:
 		{
 			PAINTSTRUCT ps;
 			HDC hDC = BeginPaint(hWnd, &ps);
 			HDC hCmpDC = CreateCompatibleDC(hDC);
-			RECT rect;
-			GetClientRect(hWnd, &rect);
-			int fWidth = rect.right - rect.left;
-			int fHeight = rect.bottom - rect.top;
 			HBITMAP hBitmap = CreateCompatibleBitmap(hDC, fWidth, fHeight);
 			SelectObject(hCmpDC, hBitmap);
 
@@ -91,8 +92,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		case WM_TIMER:
 		{
-			snake->move(snake);
-			InvalidateRect(hWnd, NULL, FALSE);
+			switch (wParam)
+			{
+				case TIMER_TICK_ID:
+				{
+					snake->move(snake);
+					if ((snake->getTopNode(snake)->data.x >= fWidth) || (snake->getTopNode(snake)->data.x < 0) || (snake->getTopNode(snake)->data.y >= fHeight) || snake->getTopNode(snake)->data.y < 0)
+					{
+						KillTimer(hWnd, wParam);
+						freeStack(snake);
+						MessageBox(hWnd, "Game over", WINDOW_NAME, MB_OK);
+						snake = newStack();
+					}
+					InvalidateRect(hWnd, NULL, FALSE);
+					break;
+				}
+			}
 			break;
 		}
 		case WM_KEYUP:
