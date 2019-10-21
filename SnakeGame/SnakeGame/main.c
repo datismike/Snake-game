@@ -91,7 +91,47 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		case WM_TIMER:
 		{
-
+			snake->move(snake);
+			InvalidateRect(hWnd, NULL, FALSE);
+			break;
+		}
+		case WM_KEYUP:
+		{
+			switch (wParam)
+			{
+				case VK_RETURN:
+				{
+					SetTimer(hWnd, TIMER_TICK_ID, TIMER_TICK_ELAPSE, NULL);
+					break;
+				}
+			}
+			break;
+		}
+		case WM_KEYDOWN:
+		{
+			switch (wParam)
+			{
+				case VK_UP:
+				{
+					snake->setDirection(snake, Up);
+					break;
+				}
+				case VK_RIGHT:
+				{
+					snake->setDirection(snake, Right);
+					break;
+				}
+				case VK_DOWN:
+				{
+					snake->setDirection(snake, Down);
+					break;
+				}
+				case VK_LEFT:
+				{
+					snake->setDirection(snake, Left);
+					break;
+				}
+			}
 			break;
 		}
 		case WM_DESTROY:

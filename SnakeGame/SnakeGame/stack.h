@@ -2,8 +2,8 @@
 
 typedef enum Bool
 {
-	True,
-	False
+	False,
+	True
 } Bool;
 
 // Data stored in the stack element
@@ -22,14 +22,25 @@ typedef struct Node
 } Node;
 typedef Node *PNode; // Pointer to stack element
 
+// Move direction
+typedef enum Direction
+{
+	Up,
+	Right,
+	Down,
+	Left
+} Direction;
+
 // Stack
 typedef struct Stack
 {
 	// Public
 	void (*push)(struct Stack *, Data);
-	Data (*getTopValue)(struct Stack *);
-	Data (*getBottomValue)(struct Stack *);
+	PNode (*getTopNode)(struct Stack *);
+	PNode (*getBottomNode)(struct Stack *);
 	Bool (*isEmpty)(struct Stack *);
+	void (*move)(struct Stack *);
+	void (*setDirection)(struct Stack *, Direction);
 
 	// Private
 	void *privateData;

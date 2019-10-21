@@ -4,11 +4,12 @@
 
 typedef struct PrivateData
 {
-	PNode topValue;
-	PNode bottomValue;
+	PNode topNode;
+	PNode bottomNode;
+	Direction direction;
 } PrivateData;
 
-static push(Stack *pstack, Data data)
+static void push(Stack *pstack, Data data)
 {
 	if (pstack->isEmpty(pstack))
 	{
@@ -16,11 +17,11 @@ static push(Stack *pstack, Data data)
 		firstNode->data = data;
 		firstNode->next = NULL;
 		firstNode->prev = NULL;
-		((PrivateData *)pstack->privateData)->topValue = firstNode;
-		((PrivateData *)pstack->privateData)->bottomValue = firstNode;
+		((PrivateData *)pstack->privateData)->topNode = firstNode;
+		((PrivateData *)pstack->privateData)->bottomNode = firstNode;
 		return;
 	}
-	for (PNode node = ((PrivateData *)pstack->privateData)->bottomValue; node != NULL; node = node->next)
+	for (PNode node = ((PrivateData *)pstack->privateData)->bottomNode; node != NULL; node = node->next)
 	{
 		if (node->next == NULL)
 		{
@@ -29,30 +30,76 @@ static push(Stack *pstack, Data data)
 			newTopValue->next = NULL;
 			newTopValue->prev = node;
 			node->next = newTopValue;
-			((PrivateData *)pstack->privateData)->topValue = newTopValue;
+			((PrivateData *)pstack->privateData)->topNode = newTopValue;
 			return;
 		}
 	}
 }
 
-static Data getTopValue(Stack *pstack)
+static PNode getTopNode(Stack *pstack)
 {
-	if (((PrivateData *)pstack->privateData)->topValue != NULL)
-		return ((PrivateData *)pstack->privateData)->topValue->data;
+	if (((PrivateData *)pstack->privateData)->topNode != NULL)
+		return ((PrivateData *)pstack->privateData)->topNode;
 }
 
-static Data getBottomValue(Stack *pstack)
+static PNode getBottomNode(Stack *pstack)
 {
-	if (((PrivateData *)pstack->privateData)->topValue != NULL)
-		return ((PrivateData *)pstack->privateData)->bottomValue->data;
+	if (((PrivateData *)pstack->privateData)->topNode != NULL)
+		return ((PrivateData *)pstack->privateData)->bottomNode;
 }
 
 static Bool isEmpty(Stack *pstack)
 {
-	if ((((PrivateData *)pstack->privateData)->topValue == NULL) && (((PrivateData *)pstack->privateData)->bottomValue == NULL))
+	if ((((PrivateData *)pstack->privateData)->bottomNode == NULL) && (((PrivateData *)pstack->privateData)->topNode == NULL))
 		return True;
 	else
 		return False;
+}
+
+static void move(Stack *pstack)
+{
+	for (PNode node = ((PrivateData *)pstack->privateData)->bottomNode; node->next != NULL; node = node->next)
+	{
+		node->data.x = node->next->data.x;
+		node->data.y = node->next->data.y;
+	}
+	//((PrivateData *)pstack->privateData)->bottomNode = ((PrivateData *)pstack->privateData)->bottomNode->next;
+	//free(((PrivateData *)pstack->privateData)->bottomNode->prev);
+	//((PrivateData *)pstack->privateData)->bottomNode->prev = NULL;
+
+	//((PrivateData *)pstack->privateData)->topNode->next = (PNode)malloc(sizeof(Node));
+	//((PrivateData *)pstack->privateData)->topNode->next->next = NULL;
+	//((PrivateData *)pstack->privateData)->topNode->next->prev = ((PrivateData *)pstack->privateData)->topNode;
+	//((PrivateData *)pstack->privateData)->topNode->next->data = ((PrivateData *)pstack->privateData)->topNode->data;
+	//((PrivateData *)pstack->privateData)->topNode = ((PrivateData *)pstack->privateData)->topNode->next;
+	switch (((PrivateData *)pstack->privateData)->direction)
+	{
+		case Up:
+		{
+			((PrivateData *)pstack->privateData)->topNode->data.y -= CELL_WIDTH;
+			break;
+		}
+		case Right:
+		{
+			((PrivateData *)pstack->privateData)->topNode->data.x += CELL_WIDTH;
+			break;
+		}
+		case Down:
+		{
+			((PrivateData *)pstack->privateData)->topNode->data.y += CELL_WIDTH;
+			break;
+		}
+		case Left:
+		{
+			((PrivateData *)pstack->privateData)->topNode->data.x -= CELL_WIDTH;
+			break;
+		}
+	}
+}
+
+static void setDirection(Stack *pstack, Direction direction)
+{
+	((PrivateData *)pstack->privateData)->direction = direction;
 }
 
 Stack *newStack()
@@ -60,10 +107,14 @@ Stack *newStack()
 	Stack *stack = (Stack *)malloc(sizeof(Stack));
 	stack->privateData = (PrivateData *)malloc(sizeof(PrivateData));
 	stack->push = &push;
-	stack->getTopValue = &getTopValue;
-	stack->getBottomValue = &getBottomValue;
-	((PrivateData *)stack->privateData)->topValue = NULL;
-	((PrivateData *)stack->privateData)->bottomValue = NULL;
+	stack->getTopNode = &getTopNode;
+	stack->getBottomNode = &getBottomNode;
+	stack->isEmpty = &isEmpty;
+	stack->move = &move;
+	stack->setDirection = &setDirection;
+	((PrivateData *)stack->privateData)->topNode = NULL;
+	((PrivateData *)stack->privateData)->bottomNode = NULL;
+	stack->setDirection(stack, Right);
 
 	Data cell;
 	cell.x = 0;
