@@ -10,4 +10,4 @@
 #define WINDOW_CLASS_NAME "MainWindowClass"
 #define WINDOW_NAME "Sanke Game"
 #define TIMER_TICK_ID 1
-#define TIMER_TICK_ELAPSE 250
+#define TIMER_TICK_ELAPSE 100

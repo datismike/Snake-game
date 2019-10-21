@@ -126,13 +126,13 @@ Stack *newStack()
 	cell.y = 0;
 	stack->push(stack, cell);
 
-	cell.x = 3 * CELL_WIDTH;
-	cell.y = 0;
-	stack->push(stack, cell);
+	//cell.x = 3 * CELL_WIDTH;
+	//cell.y = 0;
+	//stack->push(stack, cell);
 
-	cell.x = 4 * CELL_WIDTH;
-	cell.y = 0;
-	stack->push(stack, cell);
+	//cell.x = 4 * CELL_WIDTH;
+	//cell.y = 0;
+	//stack->push(stack, cell);
 
 	return stack;
 }

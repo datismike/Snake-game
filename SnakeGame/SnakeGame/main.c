@@ -4,6 +4,7 @@
 
 Stack *snake;
 Data food;
+int foodCount;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 Data GetRandomFood(HWND hWnd);
 void NewGame(HWND hWnd);
@@ -83,12 +84,17 @@ void NewGame(HWND hWnd)
 {
 	snake = newStack();
 	food = GetRandomFood(hWnd);
+	foodCount = 0;
 }
 
 void GameOver(HWND hWnd)
 {
 	freeStack(snake);
-	MessageBox(hWnd, "Game over", WINDOW_NAME, MB_OK);
+	char str1[4];
+	_itoa(foodCount, str1, 10);
+	char str2[100] = "Game over. Food count: ";
+	strcat(str2, str1);
+	MessageBox(hWnd, str2, WINDOW_NAME, MB_YESNO);
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -156,6 +162,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						if ((snake->getTopNode(snake)->data.x == node->data.x) && (snake->getTopNode(snake)->data.y == node->data.y))
 						{
 							condition2 = TRUE;
+							break;
+						}
+						if ((snake->getTopNode(snake)->data.x == food.x) && (snake->getTopNode(snake)->data.y == food.y))
+						{
+							snake->push(snake, food);
+							foodCount++;
+							food = GetRandomFood(hWnd);
 							break;
 						}
 					}
