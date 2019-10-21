@@ -1,4 +1,5 @@
 #include "stack.h"
+#include "field.h"
 #define NULL (((void *)0))
 
 typedef struct PrivateData
@@ -58,11 +59,25 @@ Stack *newStack()
 {
 	Stack *stack = (Stack *)malloc(sizeof(Stack));
 	stack->privateData = (PrivateData *)malloc(sizeof(PrivateData));
-	((PrivateData *)stack->privateData)->topValue = NULL;
-	((PrivateData *)stack->privateData)->bottomValue = NULL;
 	stack->push = &push;
 	stack->getTopValue = &getTopValue;
 	stack->getBottomValue = &getBottomValue;
+	((PrivateData *)stack->privateData)->topValue = NULL;
+	((PrivateData *)stack->privateData)->bottomValue = NULL;
+
+	Data cell;
+	cell.x = 0;
+	cell.y = 0;
+	stack->push(stack, cell);
+	
+	cell.x = 1 * CELL_WIDTH;
+	cell.y = 0;
+	stack->push(stack, cell);
+
+	cell.x = 2 * CELL_WIDTH;
+	cell.y = 0;
+	stack->push(stack, cell);
+
 	return stack;
 }
 
